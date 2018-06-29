@@ -1,0 +1,13 @@
+{
+  "name": "es-streams",
+  "version": "1.0.0",
+  "description": "ElasitcSearch streams",
+  "main": "index.js",
+  "repository": "https://github.com/mikecote/es-streams.git",
+  "author": "Mike Côté",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "lodash": "^4.17.10"
+  }
+}
