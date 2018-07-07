@@ -1,8 +1,8 @@
 const _ = require('lodash');
 const uuid = require('uuid');
 
-exports.createTestIndex = (esClient, done) => {
-	esClient.indices.create({
+exports.createTestIndex = async (esClient) => {
+	const result = await esClient.indices.create({
 		index: 'test',
 		body: {
 			settings: {
@@ -17,16 +17,18 @@ exports.createTestIndex = (esClient, done) => {
 				},
 			},
 		},
-	}, done);
+	});
+	return result;
 };
 
-exports.deleteTestIndex = (esClient, done) => {
-	esClient.indices.delete({
+exports.deleteTestIndex = async (esClient) => {
+	const result = await esClient.indices.delete({
 		index: 'test',
-	}, done);
+	});
+	return result;
 };
 
-exports.populateRecords = (esClient, numberOfRecords, done) => {
+exports.populateRecords = async (esClient, numberOfRecords) => {
 	const actions = [];
 	_.times(numberOfRecords, () => {
 		const id = uuid.v4();
@@ -42,18 +44,12 @@ exports.populateRecords = (esClient, numberOfRecords, done) => {
 			field1: uuid.v4(),
 		});
 	});
-	esClient.bulk({
+	const result = await esClient.bulk({
 		refresh: true,
 		body: actions,
-	}, (err, resp) => {
-		if (err) {
-			done(err);
-			return;
-		}
-		if (resp.errors === true) {
-			done(new Error('Failed to index all records'));
-			return;
-		}
-		done(null, resp);
 	});
+	if (result.errors === true) {
+		return Promise.reject(new Error('Failed to index all records'));
+	}
+	return result;
 };

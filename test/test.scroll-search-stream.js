@@ -7,8 +7,8 @@ const ScrollSearchStream = require('../src/ScrollSearchStream.js');
 
 describe(__filename, () => {
 	function runScenarios(esClient) {
-		before((done) => {
-			helper.createTestIndex(esClient, done);
+		before(async () => {
+			await helper.createTestIndex(esClient);
 		});
 
 		it('Stream should work when 0 records returned', (done) => {
@@ -42,8 +42,8 @@ describe(__filename, () => {
 				.on('error', done);
 		});
 
-		it('Should insert 1 record', (done) => {
-			helper.populateRecords(esClient, 1, done);
+		it('Should insert 1 record', async () => {
+			await helper.populateRecords(esClient, 1);
 		});
 
 		it('Stream should work when 1 records returned', (done) => {
@@ -77,8 +77,8 @@ describe(__filename, () => {
 				.on('error', done);
 		});
 
-		it('Should insert 99 more records', (done) => {
-			helper.populateRecords(esClient, 99, done);
+		it('Should insert 99 more records', async () => {
+			await helper.populateRecords(esClient, 99);
 		});
 
 		it('Stream should work when 100 records returned', (done) => {
@@ -112,8 +112,8 @@ describe(__filename, () => {
 				.on('error', done);
 		});
 
-		it('Should insert 900 more records', (done) => {
-			helper.populateRecords(esClient, 900, done);
+		it('Should insert 900 more records', async () => {
+			await helper.populateRecords(esClient, 900);
 		});
 
 		it('Stream should work when 1000 records returned', function run(done) {
@@ -148,8 +148,8 @@ describe(__filename, () => {
 				.on('error', done);
 		});
 
-		after((done) => {
-			helper.deleteTestIndex(esClient, done);
+		after(async () => {
+			await helper.deleteTestIndex(esClient);
 		});
 	}
 
