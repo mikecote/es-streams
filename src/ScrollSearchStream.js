@@ -1,5 +1,3 @@
-// TODO: Provide top result info to each stream element
-
 const _ = require('lodash');
 const { Readable } = require('stream');
 
@@ -26,8 +24,9 @@ module.exports = class ScrollStream extends Readable {
 	}
 
 	_read() {
-		if (this.reading) return;
-		this.fetchPage();
+		if (!this.reading) {
+			this.fetchPage();
+		}
 	}
 
 	fetchPage() {
@@ -62,7 +61,8 @@ module.exports = class ScrollStream extends Readable {
 		});
 		this.reading = false;
 		if (result.hits.total === this.pointer || this.forceClose) {
-			// Trigger an async clearScroll fo rthe current scrollId
+			// Trigger an async clearScroll for the current scrollId, if an error happens,
+			// scrollTimeout will ensure the scroll goes away
 			this.esClient.clearScroll({ scrollId: this.scrollId }, _.noop);
 			// End
 			this.forceClose = false;

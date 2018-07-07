@@ -1,14 +1,17 @@
 const assert = require('assert');
 const { Writable } = require('stream');
 const helper = require('./helper.js');
+const { ScrollSearchStream } = require('../src');
 const es5Client = require('./services/elasticsearch5.js');
 const es6Client = require('./services/elasticsearch6.js');
-const ScrollSearchStream = require('../src/ScrollSearchStream.js');
 
 describe(__filename, () => {
 	function runScenarios(esClient) {
 		before(async () => {
 			await helper.createTestIndex(esClient);
+		});
+		after(async () => {
+			await helper.deleteTestIndex(esClient);
 		});
 
 		it('Stream should work when 0 records returned', (done) => {
@@ -146,10 +149,6 @@ describe(__filename, () => {
 					done();
 				})
 				.on('error', done);
-		});
-
-		after(async () => {
-			await helper.deleteTestIndex(esClient);
 		});
 	}
 

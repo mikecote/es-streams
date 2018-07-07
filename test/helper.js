@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const uuid = require('uuid');
+const { Readable } = require('stream');
 
 exports.createTestIndex = async (esClient) => {
 	const result = await esClient.indices.create({
@@ -52,4 +53,22 @@ exports.populateRecords = async (esClient, numberOfRecords) => {
 		return Promise.reject(new Error('Failed to index all records'));
 	}
 	return result;
+};
+
+exports.getReadStream = (numOfRecords) => {
+	let counter = 0;
+	return new Readable({
+		objectMode: true,
+		read() {
+			if (counter === numOfRecords) {
+				this.push(null);
+				return;
+			}
+			this.push({
+				id: uuid.v4(),
+				field2: uuid.v4(),
+			});
+			counter += 1;
+		},
+	});
 };

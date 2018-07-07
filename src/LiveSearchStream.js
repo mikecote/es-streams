@@ -1,7 +1,3 @@
-// https://www.elastic.co/guide/en/elasticsearch/reference/master/search-request-search-after.html
-
-// TODO: Enforce sort
-
 const _ = require('lodash');
 const { Readable } = require('stream');
 
@@ -19,9 +15,9 @@ module.exports = class LiveSearchStream extends Readable {
 		this.counter = 0;
 		this.pointer = null;
 		this.reading = false;
-		this.searchOptions = opts.searchOptions;
 		this.forceClose = false;
 		this.esClient = opts.esClient;
+		this.searchOptions = opts.searchOptions;
 		this.searchOptions.body.size = opts.pageSize;
 		if (!this.searchOptions.body.sort) {
 			this.searchOptions.body.sort = [{ id: 'asc' }];
@@ -29,26 +25,21 @@ module.exports = class LiveSearchStream extends Readable {
 	}
 
 	_read() {
-		if (this.reading) return;
-		this.fetchPage();
+		if (!this.reading) {
+			this.fetchPage();
+		}
 	}
 
 	fetchPage() {
 		this.reading = true;
-		if (this.pointer) {
-			// Search after pointer
-			const body = {
-				...this.searchOptions,
-				body: {
-					...this.searchOptions.body,
-					search_after: this.pointer,
-				},
-			};
-			this.esClient.search(body, this.fetchPageCallbackHandler.bind(this));
-		} else {
-			// Start new search
-			this.esClient.search(this.searchOptions, this.fetchPageCallbackHandler.bind(this));
-		}
+		const body = {
+			...this.searchOptions,
+			body: {
+				...this.searchOptions.body,
+				search_after: this.pointer || undefined,
+			},
+		};
+		this.esClient.search(body, this.fetchPageCallbackHandler.bind(this));
 	}
 
 	fetchPageCallbackHandler(err, result) {
