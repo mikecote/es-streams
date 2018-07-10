@@ -1,5 +1,5 @@
 # ElasticSearch Streams
-ElasitcSearch streams for Node.js
+ElasticSearch streams for Node.js
 
 ## ScrollSearchStream
 

@@ -7,6 +7,6 @@ services:
       - "9200:9200"
   elasticsearch6:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.3.0
-    container_name: "elasitcsearch6"
+    container_name: "elasticsearch6"
     ports:
       - "9201:9200"

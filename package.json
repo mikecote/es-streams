@@ -1,7 +1,7 @@
 {
 	"name": "es-streams",
 	"version": "1.0.0",
-	"description": "ElasitcSearch streams",
+	"description": "ElasticSearch streams",
 	"main": "src/index.js",
 	"repository": "https://github.com/mikecote/es-streams.git",
 	"author": "Mike Côté",
