@@ -1,21 +1,21 @@
 const helper = require('../helper.js');
-const { IndexStream } = require('../../src');
+const { UpdateStream } = require('../../src');
 
-test('Stream should work when 0 records to index', async () => {
+test('Stream should work when 0 records to update', async () => {
 	const readStream = helper.getReadStream(0);
 	const esClient = {
 		bulk: jest.fn((opts, done) => {
 			done(null, {});
 		}),
 	};
-	const indexStream = new IndexStream({
+	const updateStream = new UpdateStream({
 		esClient,
 		esIndex: 'test',
 		esType: 'type1',
 	});
 	await new Promise((resolve, reject) => {
 		readStream
-			.pipe(indexStream)
+			.pipe(updateStream)
 			.on('error', reject)
 			.on('finish', () => {
 				expect(esClient.bulk).toHaveBeenCalledTimes(0);
@@ -24,21 +24,21 @@ test('Stream should work when 0 records to index', async () => {
 	});
 });
 
-test('Stream should work when 1 record to index', async () => {
+test('Stream should work when 1 record to update', async () => {
 	const readStream = helper.getReadStream(1);
 	const esClient = {
 		bulk: jest.fn((opts, done) => {
 			done(null, {});
 		}),
 	};
-	const indexStream = new IndexStream({
+	const updateStream = new UpdateStream({
 		esClient,
 		esIndex: 'test',
 		esType: 'type1',
 	});
 	await new Promise((resolve, reject) => {
 		readStream
-			.pipe(indexStream)
+			.pipe(updateStream)
 			.on('error', reject)
 			.on('finish', () => {
 				expect(esClient.bulk).toHaveBeenCalledTimes(1);
@@ -48,9 +48,9 @@ test('Stream should work when 1 record to index', async () => {
 				expect(firstCallOpts.type).toBe('type1');
 				expect(firstCallOpts.refresh).toStrictEqual(true);
 				expect(firstCallOpts.body.length).toBe(2);
-				expect(firstCallOpts.body[0].index).toBeTruthy();
+				expect(firstCallOpts.body[0].update).toBeTruthy();
 				// eslint-disable-next-line no-underscore-dangle
-				expect(firstCallOpts.body[0].index._id).toBeTruthy();
+				expect(firstCallOpts.body[0].update._id).toBeTruthy();
 				resolve();
 			});
 	});
@@ -63,14 +63,14 @@ test('Stream should work when 100 records to index', async () => {
 			done(null, {});
 		}),
 	};
-	const indexStream = new IndexStream({
+	const updateStream = new UpdateStream({
 		esClient,
 		esIndex: 'test',
 		esType: 'type1',
 	});
 	await new Promise((resolve, reject) => {
 		readStream
-			.pipe(indexStream)
+			.pipe(updateStream)
 			.on('error', reject)
 			.on('finish', () => {
 				expect(esClient.bulk).toHaveBeenCalledTimes(1);
@@ -85,21 +85,21 @@ test('Stream should work when 100 records to index', async () => {
 	});
 });
 
-test('Stream should work when 101 records to index', async () => {
+test('Stream shoud work when 101 records to update', async () => {
 	const readStream = helper.getReadStream(101);
 	const esClient = {
 		bulk: jest.fn((opts, done) => {
 			done(null, {});
 		}),
 	};
-	const indexStream = new IndexStream({
+	const updateStream = new UpdateStream({
 		esClient,
 		esIndex: 'test',
 		esType: 'type1',
 	});
 	await new Promise((resolve, reject) => {
 		readStream
-			.pipe(indexStream)
+			.pipe(updateStream)
 			.on('error', reject)
 			.on('finish', () => {
 				expect(esClient.bulk).toHaveBeenCalledTimes(2);
@@ -121,14 +121,14 @@ test('Stream should work when 1000 records to index', async () => {
 			done(null, {});
 		}),
 	};
-	const indexStream = new IndexStream({
+	const updateStream = new UpdateStream({
 		esClient,
 		esIndex: 'test',
 		esType: 'type1',
 	});
 	await new Promise((resolve, reject) => {
 		readStream
-			.pipe(indexStream)
+			.pipe(updateStream)
 			.on('error', reject)
 			.on('finish', () => {
 				expect(esClient.bulk).toHaveBeenCalledTimes(10);
@@ -150,14 +150,14 @@ test('Stream should return error when bulk fails', async () => {
 			done(new Error('Should fail'));
 		}),
 	};
-	const indexStream = new IndexStream({
+	const updateStream = new UpdateStream({
 		esClient,
 		esIndex: 'test',
 		esType: 'type1',
 	});
 	await new Promise((resolve, reject) => {
 		readStream
-			.pipe(indexStream)
+			.pipe(updateStream)
 			.on('error', (err) => {
 				expect(err.message).toBe('Should fail');
 				resolve();
@@ -175,14 +175,14 @@ test('Stream should return error when bulk contains errors', async () => {
 			done(null, { errors: true });
 		}),
 	};
-	const indexStream = new IndexStream({
+	const updateStream = new UpdateStream({
 		esClient,
 		esIndex: 'test',
 		esType: 'type1',
 	});
 	await new Promise((resolve, reject) => {
 		readStream
-			.pipe(indexStream)
+			.pipe(updateStream)
 			.on('error', (err) => {
 				expect(err.message).toBe('Errors in bulk request');
 				resolve();

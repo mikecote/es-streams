@@ -247,7 +247,7 @@ index:
 	},
 	description: {
 		id: 1,
-		// Rest of data not required
+		// Rest of data
 	},
 }
 ```
@@ -262,8 +262,10 @@ update:
 		},
 	},
 	description: {
-		id: 1,
-		// Rest of data not required
+		doc: {
+			id: 1,
+			// Rest of data
+		}
 	},
 }
 ```
@@ -275,6 +277,7 @@ delete:
 	action: {
 		delete: {
 			_id: 1,
+			// Rest of data not required
 		},
 	},
 }

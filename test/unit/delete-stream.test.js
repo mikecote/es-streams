@@ -1,21 +1,21 @@
 const helper = require('../helper.js');
-const { IndexStream } = require('../../src');
+const { DeleteStream } = require('../../src');
 
-test('Stream should work when 0 records to index', async () => {
+test('Stream should work when 0 records to delete', async () => {
 	const readStream = helper.getReadStream(0);
 	const esClient = {
 		bulk: jest.fn((opts, done) => {
 			done(null, {});
 		}),
 	};
-	const indexStream = new IndexStream({
+	const deleteStream = new DeleteStream({
 		esClient,
 		esIndex: 'test',
 		esType: 'type1',
 	});
 	await new Promise((resolve, reject) => {
 		readStream
-			.pipe(indexStream)
+			.pipe(deleteStream)
 			.on('error', reject)
 			.on('finish', () => {
 				expect(esClient.bulk).toHaveBeenCalledTimes(0);
@@ -24,21 +24,21 @@ test('Stream should work when 0 records to index', async () => {
 	});
 });
 
-test('Stream should work when 1 record to index', async () => {
+test('Stream should work when 1 record to delete', async () => {
 	const readStream = helper.getReadStream(1);
 	const esClient = {
 		bulk: jest.fn((opts, done) => {
 			done(null, {});
 		}),
 	};
-	const indexStream = new IndexStream({
+	const deleteStream = new DeleteStream({
 		esClient,
 		esIndex: 'test',
 		esType: 'type1',
 	});
 	await new Promise((resolve, reject) => {
 		readStream
-			.pipe(indexStream)
+			.pipe(deleteStream)
 			.on('error', reject)
 			.on('finish', () => {
 				expect(esClient.bulk).toHaveBeenCalledTimes(1);
@@ -47,10 +47,10 @@ test('Stream should work when 1 record to index', async () => {
 				expect(firstCallOpts.index).toBe('test');
 				expect(firstCallOpts.type).toBe('type1');
 				expect(firstCallOpts.refresh).toStrictEqual(true);
-				expect(firstCallOpts.body.length).toBe(2);
-				expect(firstCallOpts.body[0].index).toBeTruthy();
+				expect(firstCallOpts.body.length).toBe(1);
+				expect(firstCallOpts.body[0].delete).toBeTruthy();
 				// eslint-disable-next-line no-underscore-dangle
-				expect(firstCallOpts.body[0].index._id).toBeTruthy();
+				expect(firstCallOpts.body[0].delete._id).toBeTruthy();
 				resolve();
 			});
 	});
@@ -63,14 +63,14 @@ test('Stream should work when 100 records to index', async () => {
 			done(null, {});
 		}),
 	};
-	const indexStream = new IndexStream({
+	const deleteStream = new DeleteStream({
 		esClient,
 		esIndex: 'test',
 		esType: 'type1',
 	});
 	await new Promise((resolve, reject) => {
 		readStream
-			.pipe(indexStream)
+			.pipe(deleteStream)
 			.on('error', reject)
 			.on('finish', () => {
 				expect(esClient.bulk).toHaveBeenCalledTimes(1);
@@ -79,27 +79,27 @@ test('Stream should work when 100 records to index', async () => {
 				expect(firstCallOpts.index).toBe('test');
 				expect(firstCallOpts.type).toBe('type1');
 				expect(firstCallOpts.refresh).toStrictEqual(true);
-				expect(firstCallOpts.body.length).toBe(200);
+				expect(firstCallOpts.body.length).toBe(100);
 				resolve();
 			});
 	});
 });
 
-test('Stream should work when 101 records to index', async () => {
+test('Stream should work when 101 records to delete', async () => {
 	const readStream = helper.getReadStream(101);
 	const esClient = {
 		bulk: jest.fn((opts, done) => {
 			done(null, {});
 		}),
 	};
-	const indexStream = new IndexStream({
+	const deleteStream = new DeleteStream({
 		esClient,
 		esIndex: 'test',
 		esType: 'type1',
 	});
 	await new Promise((resolve, reject) => {
 		readStream
-			.pipe(indexStream)
+			.pipe(deleteStream)
 			.on('error', reject)
 			.on('finish', () => {
 				expect(esClient.bulk).toHaveBeenCalledTimes(2);
@@ -108,27 +108,27 @@ test('Stream should work when 101 records to index', async () => {
 				expect(secondCallOpts.index).toBe('test');
 				expect(secondCallOpts.type).toBe('type1');
 				expect(secondCallOpts.refresh).toStrictEqual(true);
-				expect(secondCallOpts.body.length).toBe(2);
+				expect(secondCallOpts.body.length).toBe(1);
 				resolve();
 			});
 	});
 });
 
-test('Stream should work when 1000 records to index', async () => {
+test('Stream should work when 1000 records to delete', async () => {
 	const readStream = helper.getReadStream(1000);
 	const esClient = {
 		bulk: jest.fn((opts, done) => {
 			done(null, {});
 		}),
 	};
-	const indexStream = new IndexStream({
+	const deleteStream = new DeleteStream({
 		esClient,
 		esIndex: 'test',
 		esType: 'type1',
 	});
 	await new Promise((resolve, reject) => {
 		readStream
-			.pipe(indexStream)
+			.pipe(deleteStream)
 			.on('error', reject)
 			.on('finish', () => {
 				expect(esClient.bulk).toHaveBeenCalledTimes(10);
@@ -137,7 +137,7 @@ test('Stream should work when 1000 records to index', async () => {
 				expect(tenthCallOpts.index).toBe('test');
 				expect(tenthCallOpts.type).toBe('type1');
 				expect(tenthCallOpts.refresh).toStrictEqual(true);
-				expect(tenthCallOpts.body.length).toBe(200);
+				expect(tenthCallOpts.body.length).toBe(100);
 				resolve();
 			});
 	});
@@ -150,14 +150,14 @@ test('Stream should return error when bulk fails', async () => {
 			done(new Error('Should fail'));
 		}),
 	};
-	const indexStream = new IndexStream({
+	const deleteStream = new DeleteStream({
 		esClient,
 		esIndex: 'test',
 		esType: 'type1',
 	});
 	await new Promise((resolve, reject) => {
 		readStream
-			.pipe(indexStream)
+			.pipe(deleteStream)
 			.on('error', (err) => {
 				expect(err.message).toBe('Should fail');
 				resolve();
@@ -175,14 +175,14 @@ test('Stream should return error when bulk contains errors', async () => {
 			done(null, { errors: true });
 		}),
 	};
-	const indexStream = new IndexStream({
+	const deleteStream = new DeleteStream({
 		esClient,
 		esIndex: 'test',
 		esType: 'type1',
 	});
 	await new Promise((resolve, reject) => {
 		readStream
-			.pipe(indexStream)
+			.pipe(deleteStream)
 			.on('error', (err) => {
 				expect(err.message).toBe('Errors in bulk request');
 				resolve();
