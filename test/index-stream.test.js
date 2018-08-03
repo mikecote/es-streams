@@ -14,7 +14,7 @@ function runScenarios(esClient) {
 		await helper.deleteTestIndex(esClient, indexName);
 	});
 
-	it('Stream work when 0 records to index', async () => {
+	test('Stream work when 0 records to index', async () => {
 		const numOfRecords = 1;
 		const readStream = helper.getReadStream(numOfRecords);
 		const indexStream = new IndexStream({
@@ -30,7 +30,7 @@ function runScenarios(esClient) {
 		});
 	});
 
-	it('Stream should work when 1 record to index', async () => {
+	test('Stream should work when 1 record to index', async () => {
 		const numOfRecords = 1;
 		const readStream = helper.getReadStream(numOfRecords);
 		const indexStream = new IndexStream({
@@ -46,7 +46,7 @@ function runScenarios(esClient) {
 		});
 	});
 
-	it('Stream should work when 100 records to index', async () => {
+	test('Stream should work when 100 records to index', async () => {
 		const numOfRecords = 100;
 		const readStream = helper.getReadStream(numOfRecords);
 		const indexStream = new IndexStream({
@@ -62,7 +62,7 @@ function runScenarios(esClient) {
 		});
 	});
 
-	it('Stream should work when 101 records to index', async () => {
+	test('Stream should work when 101 records to index', async () => {
 		const numOfRecords = 101;
 		const readStream = helper.getReadStream(numOfRecords);
 		const indexStream = new IndexStream({
@@ -78,7 +78,7 @@ function runScenarios(esClient) {
 		});
 	});
 
-	it('Stream should work when 1000 records to index', async () => {
+	test('Stream should work when 1000 records to index', async () => {
 		const numOfRecords = 1000;
 		const readStream = helper.getReadStream(numOfRecords);
 		const indexStream = new IndexStream({

@@ -15,7 +15,7 @@ function runScenarios(esClient) {
 		await helper.deleteTestIndex(esClient, indexName);
 	});
 
-	it('Stream should work when 0 records returned', async () => {
+	test('Stream should work when 0 records returned', async () => {
 		let counter = 0;
 		const readStream = new LiveSearchStream({
 			esClient,
@@ -48,11 +48,11 @@ function runScenarios(esClient) {
 		});
 	});
 
-	it('Should insert 1 record', async () => {
+	test('Should insert 1 record', async () => {
 		await helper.populateRecords(esClient, indexName, 1);
 	});
 
-	it('Stream should work when 1 records returned', async () => {
+	test('Stream should work when 1 records returned', async () => {
 		let counter = 0;
 		const readStream = new LiveSearchStream({
 			esClient,
@@ -85,11 +85,11 @@ function runScenarios(esClient) {
 		});
 	});
 
-	it('Should insert 99 more records', async () => {
+	test('Should insert 99 more records', async () => {
 		await helper.populateRecords(esClient, indexName, 99);
 	});
 
-	it('Stream should work when 100 records returned', async () => {
+	test('Stream should work when 100 records returned', async () => {
 		let counter = 0;
 		const readStream = new LiveSearchStream({
 			esClient,
@@ -122,11 +122,11 @@ function runScenarios(esClient) {
 		});
 	});
 
-	it('Should insert 900 more records', async () => {
+	test('Should insert 900 more records', async () => {
 		await helper.populateRecords(esClient, indexName, 900);
 	});
 
-	it('Stream should work when 1000 records returned', async () => {
+	test('Stream should work when 1000 records returned', async () => {
 		let counter = 0;
 		const readStream = new LiveSearchStream({
 			esClient,
