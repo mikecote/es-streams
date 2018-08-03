@@ -1,10 +1,10 @@
 const _ = require('lodash');
 const uuid = require('uuid');
-const { Readable } = require('stream');
+const { Readable, Writable } = require('stream');
 
 exports.createTestIndex = async (esClient) => {
 	const result = await esClient.indices.create({
-		index: 'test',
+		index: uuid.v4(),
 		body: {
 			settings: {
 				number_of_shards: 1,
@@ -22,21 +22,21 @@ exports.createTestIndex = async (esClient) => {
 	return result;
 };
 
-exports.deleteTestIndex = async (esClient) => {
+exports.deleteTestIndex = async (esClient, indexName) => {
 	const result = await esClient.indices.delete({
-		index: 'test',
+		index: indexName,
 	});
 	return result;
 };
 
-exports.populateRecords = async (esClient, numberOfRecords) => {
+exports.populateRecords = async (esClient, indexName, numberOfRecords) => {
 	const actions = [];
 	_.times(numberOfRecords, () => {
 		const id = uuid.v4();
 		actions.push({
 			index: {
 				_id: id,
-				_index: 'test',
+				_index: indexName,
 				_type: 'type1',
 			},
 		});
@@ -71,4 +71,17 @@ exports.getReadStream = (numOfRecords) => {
 			counter += 1;
 		},
 	});
+};
+
+exports.getAccumulatorStream = () => {
+	const rows = [];
+	const writeStream = new Writable({
+		objectMode: true,
+		write(row, encoding, done) {
+			rows.push(row);
+			setTimeout(done, 0);
+		},
+	});
+	writeStream.getAccumulatedRows = () => rows;
+	return writeStream;
 };
